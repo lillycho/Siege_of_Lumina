@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#121a31">
+  <title>루미나 테트라 디펜스</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <main class="game-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">LUMINA WORKSHOP</p>
+        <h1>루미나 테트라 디펜스</h1>
+      </div>
+      <div class="top-actions">
+        <button id="help-button" class="text-button" type="button">게임 방법</button>
+        <button id="restart-button" class="text-button danger" type="button">다시 시작</button>
+      </div>
+    </header>
+
+    <section class="hud turn-panel" aria-label="턴 정보">
+      <span>현재 턴</span>
+      <strong id="turn-value">1 / 20</strong>
+    </section>
+
+    <section class="hud forecast-panel" aria-label="적 출현 예고">
+      <div class="panel-heading">
+        <div><span class="panel-kicker">SCOUT</span><h2>적 출현 예고</h2></div>
+        <span>3턴</span>
+      </div>
+      <div id="forecast-list" class="forecast-list"></div>
+    </section>
+
+    <section class="battlefield" aria-label="4방향 전장">
+      <div id="lane-top" class="lane-area lane-top"></div>
+      <div id="lane-left" class="lane-area lane-left"></div>
+
+      <section class="castle" aria-label="루미나 공방성">
+        <div class="castle-tower">✦</div>
+        <strong>루미나</strong>
+        <div id="castle-hearts" class="hearts" aria-label="성 체력"></div>
+      </section>
+
+      <div id="lane-right" class="lane-area lane-right"></div>
+      <div id="lane-bottom" class="lane-area lane-bottom"></div>
+    </section>
+
+    <section class="hud merge-panel" aria-label="합성폭발과 이벤트 카드">
+      <div class="panel-heading">
+        <div><span class="panel-kicker">RESONANCE</span><h2>합성폭발</h2></div>
+        <div id="merge-gauge" class="merge-gauge"></div>
+      </div>
+      <p class="panel-help">같은 재질을 2×2로 맞추면 강화 블럭으로 합성됩니다.</p>
+      <div id="event-inventory" class="event-inventory"></div>
+    </section>
+
+    <section class="hud rotation-panel" aria-label="블럭 회전">
+      <span>블럭 회전</span>
+      <button id="rotate-button" class="key-button" type="button" disabled>R</button>
+      <strong id="rotation-value">10 / 10</strong>
+    </section>
+
+    <section class="hud hand-panel" aria-label="일반 카드 손패">
+      <div class="panel-heading">
+        <div><span class="panel-kicker">BLUEPRINT</span><h2>설계도 손패</h2></div>
+        <button id="pass-button" class="pass-button" type="button">이번 턴 패스</button>
+      </div>
+      <p id="instruction" class="instruction">카드를 선택한 뒤 강조된 전선의 열 번호를 선택하세요.</p>
+      <div id="hand" class="hand"></div>
+    </section>
+
+    <aside class="hud log-panel" aria-label="전투 기록">
+      <div class="panel-heading compact"><h2>전투 기록</h2><span id="seed-label"></span></div>
+      <ol id="battle-log"></ol>
+    </aside>
+  </main>
+
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card">
+      <button id="modal-close" class="modal-close" type="button" aria-label="닫기">×</button>
+      <p id="modal-kicker" class="panel-kicker">SYSTEM</p>
+      <h2 id="modal-title"></h2>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <script type="module" src="game.js"></script>
+</body>
+</html>

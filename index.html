@@ -34,8 +34,7 @@
       <div id="forecast-list" class="forecast-list"></div>
     </section>
 
-    <section class="battlefield" aria-label="4방향 전장">
-      <div id="lane-top" class="lane-area lane-top"></div>
+    <section class="battlefield" aria-label="좌우 2전선 전장">
       <div id="lane-left" class="lane-area lane-left"></div>
 
       <section class="castle" aria-label="루미나 공방성">
@@ -45,7 +44,6 @@
       </section>
 
       <div id="lane-right" class="lane-area lane-right"></div>
-      <div id="lane-bottom" class="lane-area lane-bottom"></div>
     </section>
 
     <section class="hud merge-panel" aria-label="합성폭발과 이벤트 카드">
@@ -57,13 +55,12 @@
       <div id="event-inventory" class="event-inventory"></div>
     </section>
 
-    <section class="hud rotation-panel" aria-label="블럭 회전">
-      <span>블럭 회전</span>
-      <button id="rotate-button" class="key-button" type="button" disabled>R</button>
-      <strong id="rotation-value">10 / 10</strong>
-    </section>
-
     <section class="hud hand-panel" aria-label="일반 카드 손패">
+      <div class="rotation-guide" aria-label="블럭 회전 키 안내">
+        <span>선택 블럭 회전</span>
+        <button id="rotate-button" class="key-button" type="button" disabled>R</button>
+        <strong id="rotation-value">10 / 10</strong>
+      </div>
       <div class="panel-heading">
         <div><span class="panel-kicker">BLUEPRINT</span><h2>설계도 손패</h2></div>
         <button id="pass-button" class="pass-button" type="button">이번 턴 패스</button>

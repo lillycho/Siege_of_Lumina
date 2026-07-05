@@ -44,13 +44,19 @@ function freshGame() {
   render();
 }
 
-function makeCell(direction, col, depth, previewSet) {
+function makeCell(direction, col, depth, previewSet, previewMaterial) {
   const lane = game.lanes[direction];
   const cell = document.createElement("div");
   cell.className = "cell";
+  cell.dataset.cellDirection = direction;
+  cell.dataset.cellColumn = String(col);
+  cell.dataset.cellDepth = String(depth);
   if (depth === 0) cell.classList.add("entrance");
   if (depth === 10) cell.classList.add("spawn");
-  if (previewSet.has(`${col}:${depth}`)) cell.classList.add("preview");
+  if (previewSet.has(`${col}:${depth}`)) {
+    cell.classList.add("preview", `ghost-${previewMaterial}`);
+    cell.title = "클릭하여 이 위치에 배치";
+  }
   const block = depth < 10 ? lane.blocks[depth][col] : null;
   if (block) {
     cell.classList.add("block", block.material);
@@ -81,31 +87,41 @@ function renderLane(direction) {
   const active = card?.direction === direction && !pendingEvent;
   root.classList.toggle("active", active);
   const grid = document.createElement("div");
-  const vertical = direction === "top" || direction === "bottom";
-  grid.className = `lane-grid ${vertical ? "vertical" : "horizontal"}`;
+  grid.className = "lane-grid horizontal";
 
   const valid = active ? game.validAnchors(card) : [];
   if (active && !valid.includes(previewAnchor)) previewAnchor = valid[0] ?? null;
   const preview = active && previewAnchor !== null ? game.getPlacement(card, previewAnchor) : null;
   const previewSet = new Set((preview || []).map(({ col, depth }) => `${col}:${depth}`));
 
-  if (direction === "top" || direction === "bottom") {
-    const depths = direction === "top"
-      ? Array.from({ length: 11 }, (_, index) => 10 - index)
-      : Array.from({ length: 11 }, (_, index) => index);
-    depths.forEach((depth) => {
-      for (let col = 0; col < 6; col += 1) grid.append(makeCell(direction, col, depth, previewSet));
-    });
-  } else {
-    const depths = direction === "left"
-      ? Array.from({ length: 11 }, (_, index) => 10 - index)
-      : Array.from({ length: 11 }, (_, index) => index);
-    for (let col = 0; col < 6; col += 1) depths.forEach((depth) => grid.append(makeCell(direction, col, depth, previewSet)));
-  }
+  const depths = direction === "left"
+    ? Array.from({ length: 11 }, (_, index) => 10 - index)
+    : Array.from({ length: 11 }, (_, index) => index);
+  for (let col = 0; col < 6; col += 1) depths.forEach((depth) => grid.append(makeCell(direction, col, depth, previewSet, card?.material)));
 
-  const label = document.createElement("span");
-  label.className = "lane-label";
-  label.textContent = `${DIRECTION_LABELS[direction]} 전선 · 위협 ${game.threat(direction)}`;
+  grid.setAttribute("role", active ? "button" : "grid");
+  grid.setAttribute("aria-label", active
+    ? `${DIRECTION_LABELS[direction]} 전선 배치 영역. 칸을 가리켜 미리 보고 클릭해 배치합니다.`
+    : `${DIRECTION_LABELS[direction]} 전선`);
+  grid.addEventListener("pointermove", (event) => {
+    if (!active) return;
+    const cell = event.target.closest("[data-cell-column]");
+    if (!cell) return;
+    const hoveredColumn = Number(cell.dataset.cellColumn);
+    const closestAnchor = [...valid].sort((a, b) => Math.abs(a - hoveredColumn) - Math.abs(b - hoveredColumn))[0];
+    if (closestAnchor !== undefined && previewAnchor !== closestAnchor) {
+      previewAnchor = closestAnchor;
+      renderLanes();
+    }
+  });
+  grid.addEventListener("click", (event) => {
+    if (!active) return;
+    const cell = event.target.closest("[data-cell-column]");
+    if (!cell) return;
+    const hoveredColumn = Number(cell.dataset.cellColumn);
+    const closestAnchor = [...valid].sort((a, b) => Math.abs(a - hoveredColumn) - Math.abs(b - hoveredColumn))[0];
+    if (closestAnchor !== undefined) placeSelected(closestAnchor);
+  });
 
   const controls = document.createElement("div");
   controls.className = "column-controls";
@@ -123,7 +139,7 @@ function renderLane(direction) {
     button.addEventListener("click", () => placeSelected(col));
     controls.append(button);
   }
-  root.append(label, grid, controls);
+  root.append(grid, controls);
 }
 
 function renderLanes() {

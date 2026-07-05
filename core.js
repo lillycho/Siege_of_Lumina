@@ -1,9 +1,9 @@
-export const DIRECTIONS = ["top", "right", "bottom", "left"];
-export const DIRECTION_LABELS = { top: "위", right: "오른쪽", bottom: "아래", left: "왼쪽" };
+export const DIRECTIONS = ["left", "right"];
+export const DIRECTION_LABELS = { left: "왼쪽", right: "오른쪽" };
 export const MATERIALS = {
-  wood: { label: "나무", hp: 2, weight: 80 },
-  stone: { label: "돌", hp: 3, weight: 15 },
-  iron: { label: "철", hp: 4, weight: 5 }
+  wood: { label: "나무", hp: 2, weight: 90 },
+  stone: { label: "돌", hp: 3, weight: 9 },
+  iron: { label: "철", hp: 4, weight: 1 }
 };
 export const SHAPES = {
   I: [[0, 0], [1, 0], [2, 0], [3, 0]],
@@ -105,7 +105,7 @@ export class GameState {
 
   weightedMaterial() {
     const roll = this.rng() * 100;
-    return roll < 80 ? "wood" : roll < 95 ? "stone" : "iron";
+    return roll < 90 ? "wood" : roll < 99 ? "stone" : "iron";
   }
 
   drawCard() {

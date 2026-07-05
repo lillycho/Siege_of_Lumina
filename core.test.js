@@ -1,6 +1,23 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { GameState, shapeCells } from "./core.js";
+import { DIRECTIONS, GameState, shapeCells } from "./core.js";
+
+test("전선은 왼쪽과 오른쪽 두 방향만 사용한다", () => {
+  assert.deepEqual(DIRECTIONS, ["left", "right"]);
+  assert.deepEqual(Object.keys(new GameState(7).lanes), ["left", "right"]);
+});
+
+test("재질 확률 경계는 나무 90%, 돌 9%, 철 1%다", () => {
+  const game = new GameState(8);
+  game.rng = () => 0.8999;
+  assert.equal(game.weightedMaterial(), "wood");
+  game.rng = () => 0.9;
+  assert.equal(game.weightedMaterial(), "stone");
+  game.rng = () => 0.9899;
+  assert.equal(game.weightedMaterial(), "stone");
+  game.rng = () => 0.99;
+  assert.equal(game.weightedMaterial(), "iron");
+});
 
 test("테트로미노 회전은 항상 4칸과 정규화된 좌표를 유지한다", () => {
   for (const shape of ["I", "T", "S", "Z", "J", "L"]) {
@@ -16,16 +33,16 @@ test("테트로미노 회전은 항상 4칸과 정규화된 좌표를 유지한�
 
 test("빈 전선의 블럭은 적 방향 끝까지 배치된다", () => {
   const game = new GameState(1);
-  const card = { shape: "I", material: "wood", direction: "top", rotation: 0 };
+  const card = { shape: "I", material: "wood", direction: "left", rotation: 0 };
   const placement = game.getPlacement(card, 0);
   assert.deepEqual(placement.map(({ depth }) => depth), [9, 9, 9, 9]);
 });
 
 test("2x2 나무 합성은 바깥쪽 줄의 돌 2칸을 만든다", () => {
   const game = new GameState(2);
-  const lane = game.lanes.top;
+  const lane = game.lanes.left;
   for (const depth of [3, 4]) for (const col of [1, 2]) lane.blocks[depth][col] = { material: "wood", hp: 2, maxHp: 2 };
-  const count = game.mergeLane("top");
+  const count = game.mergeLane("left");
   assert.equal(count, 1);
   assert.equal(game.mergeProgress, 1);
   const stones = lane.blocks.flat().filter((block) => block?.material === "stone");
@@ -56,7 +73,7 @@ test("20턴 행동을 마치고 성이 남아 있으면 승리한다", () => {
 test("같은 턴에 여러 적이 도달해도 성 HP는 음수가 되지 않는다", () => {
   const game = new GameState(6);
   game.castleHp = 1;
-  game.lanes.top.enemies.push({ col: 0, depth: 0 }, { col: 1, depth: 0 });
+  game.lanes.left.enemies.push({ col: 0, depth: 0 }, { col: 1, depth: 0 });
   game.moveEnemies();
   assert.equal(game.castleHp, 0);
 });
